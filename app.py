@@ -176,7 +176,8 @@ def profile():
             print(user_info)
     session['user_info'] = user_info
     instert_user_data(user_info["name"],user_info["email"])
-    return redirect(url_for('about'))
+    redirect_ur = "data"
+    return redirect(redirect_ur)
 
 db_config = {
     'dbname': 'postgres',
@@ -375,22 +376,17 @@ def portal():
     
 @app.route("/about")
 def about():
-    # return render_template("about.html")
-    return redirect(url_for("data"))
+    return render_template("about.html")
+
 
 @app.route("/contact")
 def contact():
 
     return render_template("contact.html")
+# Define the logout route
+@app.route('/logout')
 @app.route('/logout')
 def logout():
-    # Clear the user's session
-    session.clear()
-
-    # Redirect to the Google logout URL
-    revoke_token_url = f'https://oauth2.googleapis.com/revoke?token={session["token"]}'
-    # requests.post(revoke_token_url, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    # Redirect to the home page
-    return render_template("index.html")
-
-
+    session.pop('user_info', None)
+    redirect_ur = 'data'
+    return redirect(redirect_ur)
