@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<body>
+    <div class="newpaper">
+            <main>
+                <div class="flex-center">
+                    <div class="news_extractor_content">
+                        <form action="/data" method="POST" onsubmit="return validateUrl()">
+                            <h1>Url Data Analyser</h1>
+                            <input type="text" id="Url" name="Url" placeholder="Enter URL...">
+                            <button type="submit" value="Analyze" class="submit_btn">Analyze</button>
+                            <div id="error-message" class="error-message" style="display: none;">Please enter a valid URL.</div>
+                        </form>
+                    </div> 
+                </div>
+                <div class="output-section">
+                    {% if url %}
+                    <h2>Analyzed Data:</h2>
+                    <table class="data-table">
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>URL</td>
+                            <td>{{ url }}</td>
+                        </tr>
+                        <tr>
+                            <td>Cleaned Text</td>
+                            <td>{{ cleaned_text }}</td>
+                        </tr>
+                        <tr>
+                            <td>Number of Words</td>
+                            <td>{{ num_words }}</td>
+                        </tr>
+                        <tr>
+                            <td>Number of Sentences</td>
+                            <td>{{ num_sentences }}</td>
+                        </tr>
+                        <tr>
+                            <td>POS Tags</td>
+                            <td>{{ pos_counts }}</td>
+                        </tr>
+                        <tr>
+                            <td>Keyword frequency</td>
+                            <td>{{ keywords_frequency }}</td>
+                        </tr>
+                        <tr>
+                            <td>Image count</td>
+                            <td>{{ image_count }}</td>
+                        </tr>
+                        <tr> 
+                            <td>Headings used </td>
+                            <td>{{ headings_used }} </td>
+                        </tr>
+                    </table>
+                    {% endif %}
+          
+                </div>
+            </div>
+        
+            <script>
+                function validateUrl() {
+                    var urlInput = document.getElementById("Url").value;
+                    var errorMessage = document.getElementById("error-message");
+                    if (!urlInput.trim()) {
+                        errorMessage.style.display = "block";
+                        return false;
+                    } else {
+                        errorMessage.style.display = "none";
+                    }
+                    
+                    if (urlInput && !urlInput.includes("https") && !urlInput.includes("India Today")) {
+                        alert("Please enter a valid URL containing 'https' or 'India Today'.");
+                        return false; // Prevent form submission only if URL is provided and does not meet criteria
+                    }
+                    return true; // Allow form submission otherwise
+                }
+            </script>
+            </main> 
+    </div>
+</body>
+{% endblock %}
+</html>
+
