@@ -296,6 +296,7 @@ def portal():
     headings_used = {}
     main_heading = {}
     email = 'nologinuser'
+    user_info = ''
 
     if request.method == "POST":
         print(request)
@@ -370,7 +371,7 @@ def portal():
         if url  != '' :
             insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text, main_heading, email)
         
-
+    
     return render_template("index.html", url=url, cleaned_text=clean_text,
                            num_words=num_words, num_sentences=num_sentences,
                            pos_counts=pos_counts, keywords_frequency=keywords_frequency,
