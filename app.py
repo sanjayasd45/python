@@ -462,12 +462,13 @@ def get_all_user_data_from_table():
 @app.route('/dashboard')
 def dashboard():
     user_info = session.get('user_info', {})
-    if user_info :
-        if user_info['email'] == 'sanjayasd45@gmail.com' or 'Kushal@sitare.org' or 'nikhil7618987598@gmail.com':
+    if user_info:
+        if user_info['email'] in ['sanjayasd45@gmail.com', 'Kushal@sitare.org', 'nikhil7618987598@gmail.com']:
             all_url_data = get_all_data_from_table()
             all_user_data = get_all_user_data_from_table()
-            return render_template("dashboard.html", data = all_url_data, all_user_data = all_user_data )
+            return render_template("dashboard.html", data=all_url_data, all_user_data=all_user_data)
+
         msg = 'Your Are Not The Super User'
-        return render_template("dashboard.html", msg = msg)
+        return render_template(".html", msg = msg)
     return redirect('login')
 
