@@ -23,7 +23,7 @@ import re
 
 load_dotenv()
 app = Flask(__name__, static_url_path='/static')
-app.secret_key = 'your_secret_key'
+app.secret_key = os.environ.get('SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600*24*7
 
 
@@ -32,7 +32,7 @@ nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger')
 
 oauth = OAuth(app)
-app.secret_key = os.environ.get('jahuhskdlfhkahskljdfhkajhsjkldfjasdfkhaskjdhflkaskhdfjakjshdfkjhasjdhfkljhaksd') # Set the secret key
+# app.secret_key = os.environ.get('jahuhskdlfhkahskljdfhkajhsjkldfjasdfkhaskjdhflkaskhdfjakjshdfkjhasjdhfkljhaksd') # Set the secret key
 
 db_config = {
     'dbname': os.environ.get('DB_NAME'),
