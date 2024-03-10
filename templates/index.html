@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Data Analyser{% endblock %}
 {% block content %}
+<style>
+    .error-message{
+        margin-top: 0.2rem;
+    }
+</style>
 <body>
     <div class="newpaper">
             <main class="flex-col">
@@ -14,7 +19,6 @@
                             </h1>
                             <input type="text" id="Url" name="Url" placeholder="Enter URL...">
                             <button type="submit" value="Analyze" class="submit_btn">Analyze</button>
-                            <div id="error-message" class="error-message" style="display: none;">Please enter a valid URL.</div>
                         </form>
                     </div> 
                 </div>
@@ -58,14 +62,18 @@
                     var url = urlInput.value.trim();
             
                     if (url === '') {
-                        document.getElementById('error-message').style.display = 'block';
+                        alert("URL cannot be empty.");
+                        return false;
+                    } else if (!url.startsWith('https://')) {
+                        alert("Please enter a URL starting with 'https://'.");
                         return false;
                     } else {
-                        document.getElementById('error-message').style.display = 'none';
                         return true;
                     }
                 }
             </script>
+            
+            
     </div>
 </body>
 {% endblock %}
