@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, flash, url_for, redirect,session
+from flask import Flask, render_template, request, flash, url_for, redirect,session, jsonify,make_response
 # from flask import Flask , 
 import requests
 from bs4 import BeautifulSoup
@@ -26,58 +26,21 @@ app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'your_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600*24*7
 
-# @app.route('/login')
-# def login():
-#     session['username'] = 'user123'
-#     return 'Logged in successfully'
-
-# @app.route('/profile')
-# def profile():
-#     username = session.get('username')
-#     if username:
-#         return f'Welcome, {username}'
-#     else:
-#         return 'You are not logged in'
-# @app.route('/logout')
-# def logout():
-#     session.clear()
-#     return 'Logged out successfully'
-
-
 
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger')
-# url = os.getenv("DB_URL")
-# connection = psycopg2.connect(url)
 
-
-# def create_table(connection):
-#     # Define the table schema
-#     table_schema = """
-#     CREATE TABLE IF NOT EXISTS url_text (
-#         url VARCHAR(255),
-#         num_words INTEGER,
-#         num_sentences INTEGER,
-#         pos_counts JSONB,
-#         keywords_frequency JSONB,
-#         image_count INTEGER,
-#         headings_used JSONB,
-#         clean_text TEXT
-#     );
-#     """
-
-#     # Execute the schema creation query
-#     cursor = connection.cursor()
-#     cursor.execute(table_schema)
-#     connection.commit()
-#     print("connection done")
-#     cursor.close()
 oauth = OAuth(app)
-app.secret_key = 'your_secret_key_here'  # Set the secret key
-client_id = '630606159234-p9u62ohjjdoqsngd5pgd7ob2salaivio.apps.googleusercontent.com'
-client_secret = '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'
-redirect_uri = 'http://localhost:5000/loginnew'
+app.secret_key = os.environ.get('jahuhskdlfhkahskljdfhkajhsjkldfjasdfkhaskjdhflkaskhdfjakjshdfkjhasjdhfkljhaksd') # Set the secret key
+
+db_config = {
+    'dbname': os.environ.get('DB_NAME'),
+    'user': os.environ.get('USER_NAME'),
+    'password': os.environ.get('PASSWORD'),
+    'host': os.environ.get('HOST'),
+    'port': '5432'
+}
 
 google = oauth.register(
     name='google',
@@ -94,7 +57,7 @@ google = oauth.register(
     jwks_uri='https://www.googleapis.com/oauth2/v3/certs',
 )
 
-@app.route('/login')
+@app.route('/login')                
 def login():
     redirect_uri = url_for('authorize', _external=True)
     return google.authorize_redirect(redirect_uri)
@@ -105,8 +68,6 @@ def authorize():
     session['token'] = token
     return redirect(url_for('profile'))
 
-# @app.route('/profile')
-# from authlib.integrations.requests_client import OAuth2Session
 
 def search_user_by_email(email):
     connection = None
@@ -173,19 +134,12 @@ def profile():
                     cursor.close()
                 if connection:
                     connection.close()
-            print(user_info)
+    response = make_response('Cookie set')
+    response.set_cookie('my_cookie', value='example_value', max_age= 3600 * 24)  # Expires after 1 hour (3600 seconds)
     session['user_info'] = user_info
     instert_user_data(user_info["name"],user_info["email"])
     redirect_ur = "data"
     return redirect(redirect_ur)
-
-db_config = {
-    'dbname': 'postgres',
-    'user': 'postgres',
-    'password': '1234',
-    'host': 'localhost',
-    'port': '5432'
-}
 
 
 def get_all_data_from_table():
@@ -212,7 +166,7 @@ def get_all_data_from_table():
         if connection:
             connection.close()
 
-def insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text):
+def insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text, main_heading, email):
     connection = None  # Initialize connection variable
     cursor = None  # Initialize cursor variable
     try:
@@ -220,9 +174,9 @@ def insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_f
         cursor = connection.cursor()
 
         table_name = 'url_data'
-        query = f"INSERT INTO {table_name} (url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text) VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"
+        query = f"INSERT INTO {table_name} (url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used, clean_text, main_heading, email ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s , %s)"
 
-        cursor.execute(query, (url, num_words, num_sentences, pos_counts, json.dumps(keywords_frequency), image_count, json.dumps(headings_used),clean_text))
+        cursor.execute(query, (url, num_words, num_sentences, pos_counts, json.dumps(keywords_frequency), image_count, json.dumps(headings_used),clean_text, main_heading, email))
         connection.commit()
         print("Data inserted successfully.")
 
@@ -241,11 +195,9 @@ def insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_f
 
 @app.get("/")
 def home() :
-    # user_info = oauth.get('https://www.googleapis.com/oauth2/v3/userinfo').json()
-    # data = session
-    user_info = session.get('user_info')
-    return render_template("new.html", user_info = user_info)
-    # return user_info
+    return redirect('data')
+
+
 
 
 
@@ -253,14 +205,36 @@ def home() :
 def get_clean_text(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-
-    news_content = soup.find_all('div', class_= ["news-content", "story-highlights", "description", "story-kicker","container","at_row","_next","clearfix"])
+    
+    # Find relevant content elements
+    news_content = soup.find_all('div', class_=["news-content", "story-highlights", "description", "story-kicker","container","at_row","_next","clearfix"])
+    
+    # Extract text from content elements
     combined_text = ' '.join([element.get_text() for element in news_content])
-
-    clean_text = re.sub(r'<.*?>', '', combined_text)  # Remove HTML tags
-    clean_text = re.sub(r'[^a-zA-Z\s]', '', clean_text)  # Remove non-alphabetic characters
-    clean_text = clean_text.lower()  # Convert text to lowercase
-    return clean_text
+    
+    # Remove HTML tags
+    clean_text = re.sub(r'<.*?>', '', combined_text)
+    
+    # Remove non-alphabetic characters except periods
+    clean_text = re.sub(r'[^a-zA-Z\s.]', '', clean_text)
+    
+    # Remove multiple spaces and newlines
+    clean_text = re.sub(r'\s+', ' ', clean_text)
+    
+    # Split text into sentences
+    sentences = clean_text.split('.')
+    
+    # Filter sentences
+    filtered_sentences = []
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if sentence and sentence[0].isupper():
+            filtered_sentences.append(sentence + '.')  # Append period to each sentence
+    
+    # Join filtered sentences
+    clean_text = ' '.join(filtered_sentences)
+    
+    return clean_text.strip()
 
 def count_images_in_text(url):
     response = requests.get(url)
@@ -296,6 +270,8 @@ def portal():
     keywords_frequency = {}
     image_count = 0
     headings_used = {}
+    main_heading = {}
+    email = 'nologinuser'
 
     if request.method == "POST":
         print(request)
@@ -362,16 +338,42 @@ def portal():
 
         # Extract headings from URL
         headings_used = extract_headings(url)
+        user_info = session.get('user_info', {})
+        if user_info :
+            email = user_info['email']
+    def get_main_heading_from_url(url):
+        try:
+            # Fetch the HTML content from the URL
+            response = requests.get(url)
+            
+            # Check if the request was successful
+            if response.status_code == 200:
+                html_content = response.text
+                
+                # Parse the HTML content
+                soup = BeautifulSoup(html_content, 'html.parser')
+                
+                # Extract the main heading
+                main_heading_tag = soup.find('h1')
+                main_heading = main_heading_tag.get_text(strip=True) if main_heading_tag else None
+                
+                return main_heading
+            else:
+                print("Failed to fetch URL:", response.status_code)
+                return None
+        except Exception as e:
+            print("An error occurred:", e)
+            return None
+    main_heading = get_main_heading_from_url(url)
+    user_info = session.get('user_info', {})
+    if url  != '' :
+        insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text, main_heading, email)
+        
 
-        insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text)
-    
-    stored_data = get_all_data_from_table()
-    user_info = session.get('user_info', {}) 
-    print(user_info)
     return render_template("index.html", url=url, cleaned_text=clean_text,
                            num_words=num_words, num_sentences=num_sentences,
                            pos_counts=pos_counts, keywords_frequency=keywords_frequency,
-                           image_count=image_count, headings_used=headings_used, user_info = user_info)
+                           image_count=image_count, headings_used=headings_used, user_info = user_info, main_heading = main_heading)
 
     
 @app.route("/about")
@@ -381,12 +383,81 @@ def about():
 
 @app.route("/contact")
 def contact():
-
     return render_template("contact.html")
 # Define the logout route
-@app.route('/logout')
 @app.route('/logout')
 def logout():
     session.pop('user_info', None)
     redirect_ur = 'data'
     return redirect(redirect_ur)
+
+
+def get_url_by_email_from_table(email):
+    connection = None  # Initialize connection variable
+    cursor = None  # Initialize cursor variable
+    try:
+        connection = psycopg2.connect(**db_config)
+        cursor = connection.cursor()
+        table_name = 'url_data'
+        query = f"SELECT * FROM {table_name} WHERE email = '{email}'"  # Using f-string to interpolate email
+        cursor.execute(query)
+        data = cursor.fetchall()
+        return data
+    except Exception as e:
+        print("Error retrieving data from the table:", e)
+        return []
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+@app.route('/user')
+def user():
+    user_info = session.get('user_info', {})
+    if user_info :
+        email = user_info['email']
+    if email:
+        data = get_url_by_email_from_table(email)
+        no_of_analysis = len(data)
+        return render_template("user.html", data = data,no_of_analysis = no_of_analysis )
+    else:
+        redirect_ur = 'login'
+        return redirect(redirect_ur)
+
+def get_all_user_data_from_table():
+    connection = None  # Initialize connection variable
+    cursor = None  # Initialize cursor variable
+    try:
+        connection = psycopg2.connect(**db_config)
+        cursor = connection.cursor()
+
+        table_name = 'users'
+        query = f"SELECT * FROM {table_name}"
+
+        cursor.execute(query)
+        data = cursor.fetchall()
+
+        return data
+    except Exception as e:
+        print("Error retrieving data from the table:", e)
+        return []
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.route('/dashboard')
+def dashboard():
+    user_info = session.get('user_info', {})
+    if user_info :
+        if user_info['email'] == 'sanjayasd45@gmail.com' :
+            all_url_data = get_all_data_from_table()
+            all_user_data = get_all_user_data_from_table()
+            print(all_user_data)
+            return render_template("dashboard.html", data = all_url_data, all_user_data = all_user_data )
+        msg = 'Your Are Not The Super User'
+        return render_template("dashboard.html", msg = msg)
+    return redirect('login')
+

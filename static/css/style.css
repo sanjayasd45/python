@@ -12,7 +12,9 @@ body{
 } 
 .flex-col{
     display: flex;
-    align-items: flex-start;
+    /* align-items: flex-start; */
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
 }
 .newpaper {
@@ -23,6 +25,10 @@ body{
     overflow-y: auto;
     height: 100%;
 }
+.advanced{
+    font-size: 0.8rem;
+    color: rgb(124, 124, 124);
+}
 .navbar_user a{
     text-decoration: none;
     color: black;
@@ -31,6 +37,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    text-decoration: none;
 }
 .newpaper::before {
     content: '';
@@ -185,13 +192,12 @@ body{
 }
 .extracted_content{
     height: fit-content;
-    width: 72rem;
-    margin-top: 28px;
+    width: 80rem;
     border-radius: 1rem;
     display: flex;
     justify-content: center;
     background: #dae7f7;
-    box-shadow:  130px 13px 20px #c8cfd9,-13px -13px 20px #ffffff;
+    box-shadow:  40px 13px 20px #c8cfd9,-13px -13px 20px #ffffff;
     padding: 1rem;
     margin-bottom: 3rem;
 
