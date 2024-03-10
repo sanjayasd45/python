@@ -137,8 +137,28 @@ def profile():
                     connection.close()
     response = make_response('Cookie set')
     response.set_cookie('my_cookie', value='example_value', max_age= 3600 * 24)  # Expires after 1 hour (3600 seconds)
+
+    # session['user_info'] = user_info
+    # all_user_data = get_all_user_data_from_table()
+    # check = False
+    # for item in all_user_data:
+    #     email = item[2]
+    #     if email == user_info['email'] :
+    #         check = True
+    # if check :
+    #     instert_user_data(user_info["name"],user_info["email"])
     session['user_info'] = user_info
-    instert_user_data(user_info["name"],user_info["email"])
+    all_user_data = get_all_user_data_from_table()
+    check = False
+    
+    # Assuming all_user_data is a list of tuples where each tuple contains email at index 2
+    if user_info['email'] in [item[2] for item in all_user_data]:
+        check = True
+    
+    if not check:
+        instert_user_data(user_info["name"], user_info["email"])
+
+
     redirect_ur = "data"
     return redirect(redirect_ur)
 
@@ -457,7 +477,6 @@ def dashboard():
         if user_info['email'] == 'sanjayasd45@gmail.com' :
             all_url_data = get_all_data_from_table()
             all_user_data = get_all_user_data_from_table()
-            print(all_user_data)
             return render_template("dashboard.html", data = all_url_data, all_user_data = all_user_data )
         msg = 'Your Are Not The Super User'
         return render_template("dashboard.html", msg = msg)
