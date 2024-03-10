@@ -296,7 +296,6 @@ def portal():
     headings_used = {}
     main_heading = {}
     email = 'nologinuser'
-    user_info = ''
 
     if request.method == "POST":
         print(request)
@@ -375,7 +374,7 @@ def portal():
     return render_template("index.html", url=url, cleaned_text=clean_text,
                            num_words=num_words, num_sentences=num_sentences,
                            pos_counts=pos_counts, keywords_frequency=keywords_frequency,
-                           image_count=image_count, headings_used=headings_used, user_info = user_info, main_heading = main_heading)
+                           image_count=image_count, headings_used=headings_used, main_heading = main_heading)
 
     
 @app.route("/about")
