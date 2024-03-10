@@ -377,7 +377,7 @@ def portal():
             email = user_info['email']
         main_heading = get_main_heading_from_url(url)
         user_info = session.get('user_info', {})
-        if url  != '' :
+        if clean_text  != '' :
             insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text, main_heading, email)
         
     
