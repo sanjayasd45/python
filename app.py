@@ -137,21 +137,10 @@ def profile():
                     connection.close()
     response = make_response('Cookie set')
     response.set_cookie('my_cookie', value='example_value', max_age= 3600 * 24)  # Expires after 1 hour (3600 seconds)
-
-    # session['user_info'] = user_info
-    # all_user_data = get_all_user_data_from_table()
-    # check = False
-    # for item in all_user_data:
-    #     email = item[2]
-    #     if email == user_info['email'] :
-    #         check = True
-    # if check :
-    #     instert_user_data(user_info["name"],user_info["email"])
     session['user_info'] = user_info
     all_user_data = get_all_user_data_from_table()
     check = False
     
-    # Assuming all_user_data is a list of tuples where each tuple contains email at index 2
     if user_info['email'] in [item[2] for item in all_user_data]:
         check = True
     
@@ -474,7 +463,7 @@ def get_all_user_data_from_table():
 def dashboard():
     user_info = session.get('user_info', {})
     if user_info :
-        if user_info['email'] == 'sanjayasd45@gmail.com' :
+        if user_info['email'] == 'sanjayasd45@gmail.com' or 'Kushal@sitare.org' or 'nikhil7618987598@gmail.com':
             all_url_data = get_all_data_from_table()
             all_user_data = get_all_user_data_from_table()
             return render_template("dashboard.html", data = all_url_data, all_user_data = all_user_data )

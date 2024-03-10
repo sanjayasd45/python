@@ -112,7 +112,7 @@
         </div>
         <div>
             <p><span>Name : </span>{{ session['user_info']['name'] }}
-            {% if session['user_info']['email'] == 'sanjayasd45@gmail.com' %}
+            {% if session['user_info']['email'] == 'sanjayasd45@gmail.com' or 'Kushal@sitare.org' or 'nikhil7618987598@gmail.com %}
             <span class="super_user">(Super User)</span>
             <span class="dashboard"><a href="/dashboard"> &nbsp;&nbsp; Go to Dashboard </a></span>
             {% endif %}
@@ -133,7 +133,7 @@
             <p class="date"><span>Date : </span>{{ row[2] }}</p>
         </div>
         <div class="content_to_hide">
-            <h4>Main Heading</h4>
+            <h4>Article Headline</h4>
             <p>{{ row[4] }}</p>
             <h4>Number of Words</h4>
             <p>{{ row[5] }}</p>
@@ -147,6 +147,8 @@
             <p>{{ row[9] }}</p>
             <h4>Image count</h4>
             <p>{{ row[10] }}</p>
+            <h4>Heading Used</h4>
+            <p>{{ row[11] }}</p>
         </div>
         <hr/>
         {% endfor %}
