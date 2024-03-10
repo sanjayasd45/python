@@ -467,8 +467,7 @@ def dashboard():
             all_url_data = get_all_data_from_table()
             all_user_data = get_all_user_data_from_table()
             return render_template("dashboard.html", data=all_url_data, all_user_data=all_user_data)
-
         msg = 'Your Are Not The Super User'
-        return render_template(".html", msg = msg)
+        return render_template("error.html", msg = msg)
     return redirect('login')
 
