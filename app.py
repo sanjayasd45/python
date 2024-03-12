@@ -306,6 +306,7 @@ def portal():
     headings_used = {}
     main_heading = {}
     email = 'nologinuser'
+    dnf = ''
 
     if request.method == "POST":
         print(request)
@@ -379,12 +380,18 @@ def portal():
         user_info = session.get('user_info', {})
         if clean_text  != '' :
             insert_data_into_table(url, num_words, num_sentences, pos_counts, keywords_frequency, image_count, headings_used,clean_text, main_heading, email)
-        
+        else :
+            dnf = 'Data not found try using another URL '
+            return render_template("index.html", url=url, cleaned_text=clean_text,
+                           num_words=num_words, num_sentences=num_sentences,
+                           pos_counts=pos_counts, keywords_frequency=keywords_frequency,
+                           image_count=image_count, headings_used=headings_used, main_heading = main_heading, dnf = dnf)
+
     
     return render_template("index.html", url=url, cleaned_text=clean_text,
                            num_words=num_words, num_sentences=num_sentences,
                            pos_counts=pos_counts, keywords_frequency=keywords_frequency,
-                           image_count=image_count, headings_used=headings_used, main_heading = main_heading)
+                           image_count=image_count, headings_used=headings_used, main_heading = main_heading, dnf = dnf)
 
     
 @app.route("/about")
